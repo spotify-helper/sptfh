@@ -9,7 +9,7 @@ go install github.com/spotify-helper/sptfh/cmd/sptfh@latest
 ## Usage
 
 ```sh
-./sptfh --help
+$ sptfh --help
 Spotify refuses to add basic things to their application, so here is a helper tool
 
 Usage:
@@ -48,4 +48,32 @@ Usage:
 
 Flags:
   -h, --help   help for liked
+```
+
+### `top-artists`
+```
+$ sptfh  top-artists --help
+Get the top x artists
+
+Usage:
+  spth top-artists [flags]
+
+Flags:
+  -c, --count int     The number of artists to return (default 10)
+  -h, --help          help for top-artists
+  -t, --term string   The term to get the top artists for. short_term/medium_term/long_term (default "short_term")
+```
+```
+$ sptfh  top-artists -c 10 -t long_term
+Please log in to Spotify by visiting the following page in your browser: https://accounts.spotify.com/authorize?....
+1: Grateful Dead
+2: Miles Davis
+3: Neil Young
+4: Weather Report
+5: Crosby, Stills, Nash & Young
+6: Steely Dan
+7: Jefferson Airplane
+8: Sly & The Family Stone
+9: Talking Heads
+10: Allman Brothers Band
 ```

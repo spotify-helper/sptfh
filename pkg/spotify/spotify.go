@@ -21,6 +21,7 @@ var (
 			spotifyauth.ScopeUserLibraryRead,
 			spotifyauth.ScopePlaylistModifyPrivate,
 			spotifyauth.ScopePlaylistReadPrivate,
+			spotifyauth.ScopeUserTopRead,
 		),
 	)
 	ch    = make(chan *spotify.Client)
@@ -36,6 +37,7 @@ type ISpotify interface {
 	GetUserLikedSongs() (*[]string, error)
 	GetUserLikedSongsId() (*[]spotify.ID, error)
 	GetCurrentUserId() string
+	GetTopXArtists(x int, term spotify.Range) (*[]string, error)
 
 	CreatePlaylistLikedSongs() (playlistID spotify.ID, err error)
 
@@ -183,6 +185,43 @@ func (s *Spotify) GetUserLikedSongsId() (*[]spotify.ID, error) {
 	}
 
 	return &songIDS, nil
+}
+
+func (s *Spotify) GetTopXArtists(x int, term spotify.Range) (*[]string, error) {
+
+	if term != spotify.LongTermRange && term != spotify.ShortTermRange && term != spotify.MediumTermRange {
+		return nil, fmt.Errorf("term must be one of LongTermRange, ShortTermRange, MediumTermRange")
+	}
+
+	topArtists, err := s.client.CurrentUsersTopArtists(
+		context.Background(),
+		spotify.Timerange(term),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	artists := []string{}
+	for page := 1; ; page++ {
+		for _, item := range topArtists.Artists {
+			artists = append(artists, item.Name)
+		}
+		err = s.client.NextPage(context.Background(), topArtists)
+		if err == spotify.ErrNoMorePages {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// return only x number of artists
+	if len(artists) < x {
+		return &artists, nil
+	}
+
+	artists = artists[:x]
+	return &artists, nil
 }
 
 // gets the current users id
