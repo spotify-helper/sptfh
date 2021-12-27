@@ -19,6 +19,8 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
   liked       Creates a playlist of your liked songs called "Liked"
+  top-artists Get the top x artists
+  top-tracks  Get the top x number of tracks for your user
 
 Flags:
   -h, --help     help for spth
