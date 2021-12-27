@@ -28,10 +28,11 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	// Add subcommands
 	RootCmd.AddCommand(liked_playist.NewCmdLikedPlaylist())
-
 	RootCmd.AddCommand(top.NewCmdTopArtists())
-
+	RootCmd.AddCommand(top.NewCmdTopTracks())
 }
 
 func Run() {

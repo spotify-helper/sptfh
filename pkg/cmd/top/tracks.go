@@ -3,33 +3,18 @@ package top
 import (
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/spf13/cobra"
 	sptfh "github.com/spotify-helper/sptfh/pkg/spotify"
 	"github.com/zmb3/spotify/v2"
+
+	"github.com/spf13/cobra"
 )
 
-var (
-	count int
-	term  string
-)
-
-func NewCmdTopArtists() *cobra.Command {
-
+func NewCmdTopTracks() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "top-artists",
-		Short: "Get the top x artists",
+		Use:   "top-tracks",
+		Short: "Get the top x number of tracks for your user",
 		Run: func(cmd *cobra.Command, args []string) {
-
-			if os.Getenv("SPOTIFY_ID") == "" {
-				log.Fatal("SPOTIFY_ID not set")
-			}
-
-			if os.Getenv("SPOTIFY_SECRET") == "" {
-				log.Fatal("SPOTIFY_SECRET not set")
-			}
-
 			count, err := cmd.Flags().GetInt("count")
 			if err != nil {
 				log.Fatal(err)
@@ -41,7 +26,7 @@ func NewCmdTopArtists() *cobra.Command {
 			}
 
 			if term != "short_term" && term != "medium_term" && term != "long_term" {
-				log.Fatal("term must be short_term, medium_term or long_term")
+				log.Fatal("term must be short_term, medium_term, or long_term")
 			}
 
 			s, err := sptfh.Login()
@@ -49,14 +34,14 @@ func NewCmdTopArtists() *cobra.Command {
 				log.Fatal(err)
 			}
 
-			a, err := s.GetTopXArtists(count, spotify.Range(term))
+			songs, err := s.GetTopXTracks(count, spotify.Range(term))
 			if err != nil {
 				log.Fatal(err)
 			}
-
-			for i, artist := range *a {
-				fmt.Printf("%d: %s\n", i+1, artist)
+			for i, song := range *songs {
+				fmt.Printf("%d: %s\n", i+1, song)
 			}
+
 		},
 	}
 

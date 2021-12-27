@@ -77,3 +77,31 @@ Please log in to Spotify by visiting the following page in your browser: https:/
 9: Talking Heads
 10: Allman Brothers Band
 ```
+
+### `top-tracks`
+```
+$ sptfh  top-tracks --help
+Get the top x number of tracks for your user
+
+Usage:
+  spth top-tracks [flags]
+
+Flags:
+  -c, --count int     The number of artists to return (default 10)
+  -h, --help          help for top-tracks
+  -t, --term string   The term to get the top artists for. short_term/medium_term/long_term (default "short_term")
+```
+```
+$ sptfh  top-tracks --term long_term --count 10
+Please log in to Spotify by visiting the following page in your browser: https://accounts.spotify.com/authorize?....
+1: Wharf Rat - Live, June 26/28, 1974
+2: Tomorrow Never Knows - Remastered 2009
+3: Powderfinger - 2016 Remaster
+4: Teach Your Children
+5: What a Day That Was - Live; Edit
+6: 856
+7: Ohio
+8: Caution (Do Not Stop on Tracks) - Live at Wembley Empire Pool, April 1972
+9: Turn Blue
+10: Whipping Post - Live at the Atlanta International Pop Festival July 5, 1970
+```

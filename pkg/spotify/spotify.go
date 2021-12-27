@@ -38,6 +38,7 @@ type ISpotify interface {
 	GetUserLikedSongsId() (*[]spotify.ID, error)
 	GetCurrentUserId() string
 	GetTopXArtists(x int, term spotify.Range) (*[]string, error)
+	GetTopXTracks(x int, term spotify.Range) (*[]string, error)
 
 	CreatePlaylistLikedSongs() (playlistID spotify.ID, err error)
 
@@ -256,6 +257,43 @@ func (s *Spotify) RemoveDuplicateSongsFromList(songIDS *[]spotify.ID, playlistID
 	}
 
 	return songIDS, nil
+}
+
+func (s *Spotify) GetTopXTracks(x int, term spotify.Range) (*[]string, error) {
+
+	if term != spotify.LongTermRange && term != spotify.ShortTermRange && term != spotify.MediumTermRange {
+		return nil, fmt.Errorf("term must be one of LongTermRange, ShortTermRange, MediumTermRange")
+	}
+
+	topSongs, err := s.client.CurrentUsersTopTracks(
+		context.Background(),
+		spotify.Timerange(term),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	songs := []string{}
+	for page := 1; ; page++ {
+		for _, item := range topSongs.Tracks {
+			songs = append(songs, item.Name)
+		}
+		err = s.client.NextPage(context.Background(), topSongs)
+		if err == spotify.ErrNoMorePages {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// return only x number of songs
+	if len(songs) < x {
+		return &songs, nil
+	}
+
+	songs = songs[:x]
+	return &songs, nil
 }
 
 func completeAuth(w http.ResponseWriter, r *http.Request) {
