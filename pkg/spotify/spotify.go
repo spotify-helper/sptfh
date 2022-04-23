@@ -22,6 +22,7 @@ var (
 			spotifyauth.ScopePlaylistModifyPrivate,
 			spotifyauth.ScopePlaylistReadPrivate,
 			spotifyauth.ScopeUserTopRead,
+			spotifyauth.ScopePlaylistModifyPublic,
 		),
 	)
 	ch    = make(chan *spotify.Client)
@@ -39,16 +40,12 @@ type ISpotify interface {
 	GetCurrentUserId() string
 	GetTopXArtists(x int, term spotify.Range) (*[]string, error)
 	GetTopXTracks(x int, term spotify.Range) (*[]string, error)
-
 	CreatePlaylistLikedSongs() (playlistID spotify.ID, err error)
-
 	AddSongsToLikedPlaylist(songIDS *[]spotify.ID, playlistID spotify.ID) error
-
 	RemoveDuplicateSongsFromList(songIDS *[]spotify.ID, playlistID spotify.ID) (*[]spotify.ID, error)
 }
 
 func Login() (s ISpotify, string error) {
-
 	// first start an HTTP server
 	http.HandleFunc("/callback", completeAuth)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +78,6 @@ func Login() (s ISpotify, string error) {
 
 // gets the current users liked songs
 func (s *Spotify) GetUserLikedSongs() (*[]string, error) {
-
 	ls, err := s.client.CurrentUsersTracks(context.Background())
 	if err != nil {
 		return nil, err
@@ -108,7 +104,6 @@ func (s *Spotify) GetUserLikedSongs() (*[]string, error) {
 // creates a playlist for the current user
 // if it doesnt exist, otherwise it returns the id of the existing playlist
 func (s *Spotify) CreatePlaylistLikedSongs() (playlistID spotify.ID, err error) {
-
 	existingPlaylists, err := s.client.GetPlaylistsForUser(context.Background(), s.GetCurrentUserId())
 	if err != nil {
 		return "", err
@@ -139,7 +134,6 @@ func (s *Spotify) CreatePlaylistLikedSongs() (playlistID spotify.ID, err error) 
 
 // adds the liked songs to the playlist
 func (s *Spotify) AddSongsToLikedPlaylist(songIDS *[]spotify.ID, playlistID spotify.ID) (err error) {
-
 	// add tracts to playlist every 100 elements
 
 	songIDS, err = s.RemoveDuplicateSongsFromList(songIDS, playlistID)
@@ -164,7 +158,6 @@ func (s *Spotify) AddSongsToLikedPlaylist(songIDS *[]spotify.ID, playlistID spot
 
 // gets the current users liked songs ids
 func (s *Spotify) GetUserLikedSongsId() (*[]spotify.ID, error) {
-
 	ls, err := s.client.CurrentUsersTracks(context.Background())
 	if err != nil {
 		return nil, err
@@ -189,7 +182,6 @@ func (s *Spotify) GetUserLikedSongsId() (*[]spotify.ID, error) {
 }
 
 func (s *Spotify) GetTopXArtists(x int, term spotify.Range) (*[]string, error) {
-
 	if term != spotify.LongTermRange && term != spotify.ShortTermRange && term != spotify.MediumTermRange {
 		return nil, fmt.Errorf("term must be one of LongTermRange, ShortTermRange, MediumTermRange")
 	}
@@ -227,13 +219,11 @@ func (s *Spotify) GetTopXArtists(x int, term spotify.Range) (*[]string, error) {
 
 // gets the current users id
 func (s *Spotify) GetCurrentUserId() string {
-
 	return s.currentUserID
 }
 
 // removes duplicate songs from the existing list
 func (s *Spotify) RemoveDuplicateSongsFromList(songIDS *[]spotify.ID, playlistID spotify.ID) (*[]spotify.ID, error) {
-
 	existingSongs, err := s.client.GetPlaylistTracks(context.Background(), playlistID)
 	if err != nil {
 		return nil, err
@@ -260,7 +250,6 @@ func (s *Spotify) RemoveDuplicateSongsFromList(songIDS *[]spotify.ID, playlistID
 }
 
 func (s *Spotify) GetTopXTracks(x int, term spotify.Range) (*[]string, error) {
-
 	if term != spotify.LongTermRange && term != spotify.ShortTermRange && term != spotify.MediumTermRange {
 		return nil, fmt.Errorf("term must be one of LongTermRange, ShortTermRange, MediumTermRange")
 	}
